@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frog Star Catcher Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #0c2340;
+        }
+
+        canvas {
+            display: block;
+            margin: auto;
+            background: linear-gradient(to bottom, #0c2340, #1a3b72);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const frog = {
+            x: canvas.width / 2,
+            y: canvas.height - 80,
+            width: 60,
+            height: 40,
+            speed: 10
+        };
+
+        const stars = [];
+        let score = 0;
+
+        function drawFrog() {
+            ctx.fillStyle = 'green';
+            ctx.fillRect(frog.x, frog.y, frog.width, frog.height);
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.fillText('🐸', frog.x + 15, frog.y + 28);
+        }
+
+        function createStar() {
+            const star = {
+                x: Math.random() * (canvas.width - 20),
+                y: -20,
+                size: 20,
+                speed: Math.random() * 3 + 2
+            };
+            stars.push(star);
+        }
+
+        function drawStars() {
+            ctx.fillStyle = 'yellow';
+            stars.forEach(star => {
+                ctx.font = `${star.size}px Arial`;
+                ctx.fillText('⭐', star.x, star.y);
+            });
+        }
+
+        function updateStars() {
+            stars.forEach((star, index) => {
+                star.y += star.speed;
+
+                if (star.y > canvas.height) {
+                    stars.splice(index, 1);
+                }
+
+                if (star.x < frog.x + frog.width &&
+                    star.x + star.size > frog.x &&
+                    star.y < frog.y + frog.height &&
+                    star.y + star.size > frog.y) {
+                    stars.splice(index, 1);
+                    score++;
+                }
+            });
+        }
+
+        function drawScore() {
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.fillText(`Score: ${score}`, 20, 40);
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawFrog();
+            drawStars();
+            updateStars();
+            drawScore();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowLeft' && frog.x > 0) {
+                frog.x -= frog.speed;
+            } else if (event.key === 'ArrowRight' && frog.x < canvas.width - frog.width) {
+                frog.x += frog.speed;
+            }
+        });
+
+        setInterval(createStar, 1000);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            frog.y = canvas.height - 80;
+        });
+
+        gameLoop();
+    </script>
+</body>
+</html>
