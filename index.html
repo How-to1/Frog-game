@@ -1,26 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang=\"en\">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
     <title>Frog Star Catcher Game</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background-color: #0c2340;
+            background: linear-gradient(to bottom, #87ceeb, #e0f7fa);
         }
 
         canvas {
             display: block;
             margin: auto;
-            background: linear-gradient(to bottom, #0c2340, #1a3b72);
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
+    <canvas id=\"gameCanvas\"></canvas>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -29,40 +28,42 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
+        const frogImg = new Image();
+        frogImg.src = 'Frog.png';
+
+        const starImg = new Image();
+        starImg.src = 'Star.png';
+
         const frog = {
-            x: canvas.width / 2,
-            y: canvas.height - 80,
-            width: 60,
-            height: 40,
-            speed: 10
+            x: canvas.width / 2 - 40,
+            y: canvas.height - 100,
+            width: 80,
+            height: 80,
+            speed: 15,
+            jumpHeight: 100,
+            isJumping: false
         };
 
         const stars = [];
         let score = 0;
 
         function drawFrog() {
-            ctx.fillStyle = 'green';
-            ctx.fillRect(frog.x, frog.y, frog.width, frog.height);
-            ctx.fillStyle = 'white';
-            ctx.font = '20px Arial';
-            ctx.fillText('🐸', frog.x + 15, frog.y + 28);
+            ctx.drawImage(frogImg, frog.x, frog.y, frog.width, frog.height);
         }
 
         function createStar() {
             const star = {
-                x: Math.random() * (canvas.width - 20),
-                y: -20,
-                size: 20,
+                x: Math.random() * (canvas.width - 40),
+                y: -40,
+                size: 40,
                 speed: Math.random() * 3 + 2
             };
             stars.push(star);
         }
 
         function drawStars() {
-            ctx.fillStyle = 'yellow';
             stars.forEach(star => {
-                ctx.font = `${star.size}px Arial`;
-                ctx.fillText('⭐', star.x, star.y);
+                ctx.drawImage(starImg, star.x, star.y, star.size, star.size);
             });
         }
 
@@ -76,17 +77,30 @@
 
                 if (star.x < frog.x + frog.width &&
                     star.x + star.size > frog.x &&
-                    star.y < frog.y + frog.height &&
-                    star.y + star.size > frog.y) {
+                    star.y + star.size >= frog.y &&
+                    star.y < frog.y + frog.height) {
+                    frog.isJumping = true;
                     stars.splice(index, 1);
                     score++;
                 }
             });
         }
 
+        function frogJump() {
+            if (frog.isJumping) {
+                if (frog.y > canvas.height - frog.jumpHeight - 100) {
+                    frog.y -= 5;
+                } else {
+                    frog.isJumping = false;
+                }
+            } else if (frog.y < canvas.height - 100) {
+                frog.y += 5;
+            }
+        }
+
         function drawScore() {
             ctx.fillStyle = 'white';
-            ctx.font = '20px Arial';
+            ctx.font = '24px Arial';
             ctx.fillText(`Score: ${score}`, 20, 40);
         }
 
@@ -96,6 +110,7 @@
             drawFrog();
             drawStars();
             updateStars();
+            frogJump();
             drawScore();
 
             requestAnimationFrame(gameLoop);
@@ -109,12 +124,12 @@
             }
         });
 
-        setInterval(createStar, 1000);
+        setInterval(createStar, 1200);
 
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            frog.y = canvas.height - 80;
+            frog.y = canvas.height - 100;
         });
 
         gameLoop();
