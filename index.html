@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang=\"en\">
+<html lang="en">
 <head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Frog Star Catcher Game</title>
     <style>
         body {
@@ -19,7 +19,7 @@
     </style>
 </head>
 <body>
-    <canvas id=\"gameCanvas\"></canvas>
+    <canvas id="gameCanvas"></canvas>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -124,15 +124,24 @@
             }
         });
 
-        setInterval(createStar, 1200);
+        let imagesLoaded = 0;
+
+        frogImg.onload = checkImagesLoaded;
+        starImg.onload = checkImagesLoaded;
+
+        function checkImagesLoaded() {
+            imagesLoaded++;
+            if (imagesLoaded === 2) {
+                setInterval(createStar, 1200);
+                gameLoop();
+            }
+        }
 
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             frog.y = canvas.height - 100;
         });
-
-        gameLoop();
     </script>
 </body>
 </html>
